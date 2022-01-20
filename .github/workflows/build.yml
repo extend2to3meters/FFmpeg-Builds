@@ -146,7 +146,6 @@ jobs:
           path: artifacts/*
   publish_release:
     name: Publish release
-    if: github.event_name != 'push'
     needs: build_ffmpeg
     runs-on: ubuntu-latest
     steps:
@@ -180,10 +179,6 @@ jobs:
           git push --delete origin "$TAGNAME" || true
           sleep 30
           hub release create $(for a in latest_artifacts/*; do echo -a $a; done) -m "$NAME" -t "master" "$TAGNAME"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Update Wiki
-        run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Prune old releases
